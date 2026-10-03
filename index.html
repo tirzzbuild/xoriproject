@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XORI - FINAL FIX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#000;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;background:#000}.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.09) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px);background-size:26px 26px;mask-image:radial-gradient(ellipse at center, black 65%, transparent 85%)}
+.wrap{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
+.top{padding:14px 16px;background:rgba(5,5,5,0.92);backdrop-filter:blur(40px);border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.icon-btn{width:42px;height:42px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.x-btn{background:#fff!important}.x-btn .material-icons-round{color:#000!important;font-weight:900}
+.content{padding:16px 16px 140px;flex:1}
+.welcome{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:24px;padding:18px;display:flex;gap:14px;align-items:center}
+.role-badge{display:inline-flex;gap:6px;padding:5px 12px;border-radius:100px;font-size:10px;font-weight:800;font-family:'Orbitron';border:1px solid;margin-top:6px}
+.stats{background:#0C0C0C;border:1px solid rgba(255,255,255,0.1);border-radius:22px;padding:0 18px;margin-top:14px}
+.stat{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.08)}.stat:last-child{border:none}
+.s-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1)}
+.btn{width:100%;height:58px;border-radius:18px;border:1px solid rgba(255,255,255,0.14);background:#121212;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;margin-top:12px;font-family:'Orbitron'}.btn-primary{background:#fff;color:#000;border:none}
+.btn-logout{background:rgba(255,50,50,0.08)!important;border-color:rgba(255,50,50,0.22)!important;color:#FF3B3B!important}
+.chat-btn{background:linear-gradient(135deg, #0C0C0C 0%, #141414 100%);border:1px solid rgba(34,211,238,0.25);border-radius:22px;padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-top:14px;position:relative;z-index:20}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,255,136,0.7)}70%{box-shadow:0 0 0 8px rgba(0,255,136,0)}100%{box-shadow:0 0 0 0 rgba(0,255,136,0)}}
+#chatModal{position:fixed;inset:0;z-index:200;visibility:hidden;pointer-events:none}#chatModal.show{visibility:visible;pointer-events:auto}
+.chat-bg{position:absolute;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(12px);opacity:0;transition:.4s}#chatModal.show .chat-bg{opacity:1}
+.chat-panel{position:absolute;left:50%;top:50%;width:92%;max-width:440px;height:80vh;max-height:600px;background:#0A0A0A;border:1px solid rgba(255,255,255,0.15);border-radius:24px;transform:translate(-50%,-40%) scale(0.9);opacity:0;transition:.5s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;overflow:hidden}#chatModal.show .chat-panel{transform:translate(-50%,-50%) scale(1);opacity:1}
+
+.chat-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:12px}.chat-list{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,0.08);background:#000}.chat-input input{flex:1;height:46px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:0 14px;color:#fff;outline:none}.chat-send{width:46px;height:46px;background:#fff;border:none;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#drawer{position:fixed;inset:0;z-index:100;visibility:hidden;pointer-events:none}#drawer.show{visibility:visible;pointer-events:auto}
+.drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(12px);opacity:0;transition:.4s}#drawer.show .drawer-bg{opacity:1}
+.drawer-panel{position:absolute;left:0;top:0;bottom:0;width:320px;background:#0A0A0A;border-right:1px solid rgba(255,255,255,0.12);padding:20px;transform:translateX(-100%);transition:.5s cubic-bezier(0.16,1,0.3,1);overflow:auto}#drawer.show .drawer-panel{transform:translateX(0)}
+.drawer-item{display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,0.06);margin-top:10px;background:rgba(255,255,255,0.04)}
+.bottom{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:calc(100% - 20px);max-width:440px;background:rgba(5,5,5,0.96);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);display:flex;justify-content:space-around;padding:8px;border-radius:24px;z-index:40}
+.b-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;font-size:10px;font-weight:700;cursor:pointer;padding:8px 18px;border-radius:16px;transition:.3s}.b-item.active{color:#fff;background:rgba(255,255,255,0.1)}
+/* ASISTEN FIX - ADA SPASI */
+#assistant{position:fixed;bottom:90px;right:20px;z-index:90;touch-action:none;user-select:none}
+#assistant .ball{width:58px;height:58px;background:linear-gradient(135deg, #fff 0%, #ddd 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;box-shadow:0 8px 24px rgba(255,255,255,0.2);transition:transform .4s cubic-bezier(0.16,1,0.3,1), background .3s;animation:ballFloat 3s ease-in-out infinite}
+#assistant .ball:active{cursor:grabbing;transform:scale(0.9)}#assistant.open .ball{transform:rotate(180deg) scale(0.9);background:linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%);animation:none}
+@keyframes ballFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+#assistant .menu-bubble{position:absolute;bottom:72px;right:0;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transform:translateY(20px) scale(0.8);transition:.5s cubic-bezier(0.16,1,0.3,1)}
+#assistant.open .menu-bubble{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+#assistant .m-item{display:flex;align-items:center;gap:12px;background:rgba(10,10,10,0.96);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:12px 16px;cursor:pointer;white-space:nowrap}
+.m-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+/* NEWS BESAR + DRAGGABLE */
+.news-slider{margin-top:14px;position:relative;background:linear-gradient(135deg, #FFD70014 0%, #0C0C0C 100%);border:1px solid rgba(255,215,0,0.25);border-radius:26px;padding:22px 22px 16px;overflow:hidden;touch-action:pan-y;cursor:grab;z-index:20}
+.news-slider:active{cursor:grabbing}
+.news-track{display:flex;transition:transform .6s cubic-bezier(0.16,1,0.3,1);will-change:transform}
+.news-item{min-width:100%;display:flex;gap:16px;align-items:center;user-select:none}
+
+.news-dots{display:flex;gap:7px;justify-content:center;margin-top:16px}
+.dot{width:20px;height:6px;background:rgba(255,255,255,0.15);border-radius:10px;transition:.4s}.dot.active{width:32px;background:#FFD700;box-shadow:0 0 10px rgba(255,215,0,0.5)}
+.material-icons-round{color:#fff!important}
+</style>
+</head>
+<body>
+<div class="bg"><div class="grid"></div></div>
+<div id="drawer" onclick="closeDrawer()"><div class="drawer-bg"></div><div class="drawer-panel" onclick="event.stopPropagation()"><div style="display:flex;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.08)"><div style="width:44px;height:44px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-family:'Orbitron'">X</div><div><b style="font-family:'Orbitron';font-size:13px">XORI MENU</b><br><small id="drawerUser" style="font-size:10px;color:#666;font-family:'Orbitron'"></small></div><div style="margin-left:auto;width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="closeDrawer()"><span class="material-icons-round">close</span></div></div><div id="menuList" style="margin-top:18px"></div><div class="drawer-item" onclick="doLogout()" style="background:rgba(255,50,50,0.10)!important;margin-top:22px"><span class="material-icons-round" style="color:#FF3B3B!important">logout</span><b style="font-size:13px;color:#FF3B3B">Logout</b></div></div></div>
+<div id="chatModal" onclick="closeChat()"><div class="chat-bg"></div><div class="chat-panel" onclick="event.stopPropagation()"><div class="chat-header"><div style="width:42px;height:42px;background:#22D3EE;border-radius:12px;display:flex;align-items:center;justify-content:center"><span class="material-icons-round" style="color:#000!important">forum</span></div><div style="flex:1"><b style="font-family:'Orbitron';font-size:12px">GLOBAL CHAT</b><br><small id="chatOnlineCount" style="font-size:10px;color:#00FF88;font-family:'Orbitron'">0 online</small></div><div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="closeChat()"><span class="material-icons-round">close</span></div></div><div id="chatList" class="chat-list"></div><div class="chat-input"><input id="chatMsg" placeholder="Ketik pesan..." onkeydown="if(event.key==='Enter')sendChat()"><button class="chat-send" onclick="sendChat()"><span class="material-icons-round" style="color:#000!important">send</span></button></div></div></div>
+
+<div class="wrap">
+<div class="top"><div style="display:flex;align-items:center;gap:10px"><div class="icon-btn x-btn" onclick="openDrawer()"><span class="material-icons-round">close</span></div><div style="width:38px;height:38px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-family:'Orbitron'">👋</div><b style="font-family:'Orbitron';font-size:12px">XORI PANEL</b></div><div class="icon-btn" onclick="location.href='profile.html'"><span class="material-icons-round">person</span></div></div>
+<div class="content">
+<div class="welcome"><div style="width:52px;height:52px;background:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center"><span class="material-icons-round" style="color:#000!important">dashboard</span></div><div style="flex:1"><p style="font-size:9px;color:#666;letter-spacing:2px;font-family:'Orbitron'">WELCOME BACK</p><h2 id="welcomeName">Dashboard</h2><span id="welcomeRole" class="role-badge"></span></div></div>
+
+<!-- NEWS BESAR DI TENGAH - BISA GESER + AUTO -->
+<div class="news-slider" id="newsSlider">
+<div class="news-track" id="newsTrack">
+
+<div class="news-item"><div style="width:56px;height:56px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.25);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-icons-round" style="color:#FFD700!important;font-size:32px">campaign</span></div><div style="flex:1"><b style="font-size:14px;font-family:'Orbitron'">NEWS • UPDATE V3.0</b><p style="font-size:13px;color:#bbb;margin-top:4px;line-height:1.35">XORI V3.0 rilis! Bug lebih ganas & delay super cepat 🔥 Coba sekarang!</p><span style="font-size:10px;color:#FFD700;font-family:'Orbitron';margin-top:6px;display:inline-block">• BARU 2 JAM LALU</span></div></div>
+<div class="news-item"><div style="width:56px;height:56px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.25);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-icons-round" style="color:#22D3EE!important;font-size:32px">forum</span></div><div style="flex:1"><b style="font-size:14px;font-family:'Orbitron'">FITUR BARU • GLOBAL CHAT</b><p style="font-size:13px;color:#bbb;margin-top:4px;line-height:1.35">Chat bareng buyer lain, saling share bug & testimoni real! 💬</p><span style="font-size:10px;color:#22D3EE;font-family:'Orbitron';margin-top:6px;display:inline-block">• 150+ PESAN HARI INI</span></div></div>
+<div class="news-item"><div style="width:56px;height:56px;background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.22);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-icons-round" style="color:#00FF88!important;font-size:32px">smart_toy</span></div><div style="flex:1"><b style="font-size:14px;font-family:'Orbitron'">ASISTEN BOLA • DRAGGABLE</b><p style="font-size:13px;color:#bbb;margin-top:4px;line-height:1.35">Bola asisten bisa digeser kemana aja, klik buat menu Home Bug Tools Profile 🤖</p><span style="font-size:10px;color:#00FF88;font-family:'Orbitron';margin-top:6px;display:inline-block">• TAP BOLA DI BAWAH</span></div></div>
+</div>
+<div class="news-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+
+<div class="stats"><div class="stat"><div class="s-icon"><span class="material-icons-round">person</span></div><div><small style="font-size:9px;color:#666;font-family:'Orbitron'">USERNAME</small><b id="statUser">-</b></div></div><div class="stat"><div class="s-icon" id="roleIcon"><span class="material-icons-round">verified_user</span></div><div><small style="font-size:9px;color:#666;font-family:'Orbitron'">ROLE</small><b id="statRole">-</b></div><div id="roleStatus" style="margin-left:auto;font-size:9px;font-family:'Orbitron';padding:5px 10px;border-radius:20px"></div></div><div class="stat"><div class="s-icon"><span class="material-icons-round">calendar_today</span></div><div><small style="font-size:9px;color:#666;font-family:'Orbitron'">EXPIRED</small><b id="statExp">-</b></div></div></div>
+<div id="globalBtn" class="chat-btn" onclick="openChat()"><div style="width:48px;height:48px;background:#22D3EE;border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative"><span class="material-icons-round" style="color:#000!important;font-size:26px">forum</span><div style="position:absolute;top:-4px;right:-4px;width:12px;height:12px;background:#00FF88;border:2px solid #0C0C0C;border-radius:50%;animation:pulse 2s infinite"></div></div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px"><b style="font-family:'Orbitron';font-size:11px">GLOBAL CHAT</b><span id="onlineCount" style="background:#00FF8822;color:#00FF88;padding:3px 8px;border-radius:20px;font-size:9px;font-family:'Orbitron'">0 online</span></div><p id="lastMsgPreview" style="font-size:12px;color:#888;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Belum ada pesan...</p><p id="lastMsgUser" style="font-size:9px;color:#555;font-family:'Orbitron';margin-top:2px">Klik untuk buka chat</p></div><span
+
+class="material-icons-round" style="color:#333!important">chevron_right</span></div>
+<button class="btn btn-primary" onclick="location.href='bug.html'"><span class="material-icons-round" style="color:#000!important">send</span> MANAGE BUG SENDER</button>
+<button class="btn btn-logout" onclick="doLogout()"><span class="material-icons-round" style="color:#FF3B3B!important">logout</span> LOGOUT TO LANDING</button>
+</div>
+<div class="bottom"><div class="b-item active"><span class="material-icons-round">home</span>Home</div><div class="b-item" onclick="location.href='bug.html'"><span class="material-icons-round">bug_report</span>WhatsApp</div><div class="b-item" onclick="location.href='tools.html'"><span class="material-icons-round">construction</span>Tools</div><div class="b-item" onclick="location.href='profile.html'"><span class="material-icons-round">person</span>Profile</div></div>
+</div>
+<div id="assistant"><div class="menu-bubble"><div class="m-item" onclick="location.href='dashboard.html'"><div class="m-icon" style="background:#fff"><span class="material-icons-round" style="color:#000!important">home</span></div><b style="font-size:12px;font-family:'Orbitron'">HOME</b></div><div class="m-item" onclick="location.href='bug.html'"><div class="m-icon" style="background:rgba(255,50,50,0.15)"><span class="material-icons-round" style="color:#FF3B3B!important">bug_report</span></div><b style="font-size:12px;font-family:'Orbitron'">BUG</b></div><div class="m-item" onclick="location.href='tools.html'"><div class="m-icon" style="background:rgba(34,211,238,0.15)"><span class="material-icons-round" style="color:#22D3EE!important">construction</span></div><b style="font-size:12px;font-family:'Orbitron'">TOOLS</b></div><div class="m-item" onclick="location.href='profile.html'"><div class="m-icon" style="background:rgba(168,85,247,0.15)"><span class="material-icons-round" style="color:#A855F7!important">person</span></div><b style="font-size:12px;font-family:'Orbitron'">PROFILE</b></div></div><div class="ball" id="ball"><span class="material-icons-round" style="color:#000!important;font-size:28px">smart_toy</span></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "GANTI_APIKEY_KAMU", authDomain: "xori-panel.firebaseapp.com", projectId: "xori-panel", storageBucket: "xori-panel.appspot.com", messagingSenderId: "123", appId: "1:123:web:abc" };
+const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+function getData(){return {u:localStorage.getItem('username')'hafiz', r:(localStorage.getItem('role')'owner').toLowerCase(), ex:localStorage.getItem('expiredDate')||'2026-12-31'}}
+window.openDrawer=()=>{document.getElementById('drawer').classList.add('show');buildMenu();}
+window.closeDrawer=()=>document.getElementById('drawer').classList.remove('show');
+window.openChat=()=>document.getElementById('chatModal').classList.add('show');
+window.closeChat=()=>document.getElementById('chatModal').classList.remove('show');
+function buildMenu(){let d=getData();document.getElementById('drawerUser').innerText=d.u.toUpperCase()+' • '+d.r.toUpperCase();let menus=[]; if(['devloper','developer','dev'].includes(d.r)){menus.push({t:'Dev Page',p:'dev.html',c:'#FFD700',i:'code'});menus.push({t:'Owner Page',p:'owner.html',c:'#FFD700',i:'workspace_premium'});menus.push({t:'Reseller Page',p:'seller.html',c:'#A855F7',i:'storefront'});} else if(d.r==='owner'){menus.push({t:'Owner Page',p:'owner.html',c:'#FFD700',i:'workspace_premium'});menus.push({t:'Reseller Page',p:'seller.html',c:'#A855F7',i:'storefront'});} else if(['resseler','reseller'].includes(d.r)){menus.push({t:'Reseller Page',p:'seller.html',c:'#A855F7',i:'storefront'});} document.getElementById('menuList').innerHTML=menus.map(m=>`<div class="drawer-item" onclick="location.href='${m.p}'"><span
+
+class="material-icons-round" style="color:${m.c}!important">${m.i}</span><b style="font-size:13px">${m.t}</b><span class="material-icons-round" style="margin-left:auto;color:#333!important">chevron_right</span></div>).join('');}
+function renderRole(){let d=getData();let cfg={'owner':{l:'OWNER',c:'#FFD700',bg:'rgba(255,215,0,0.12)',b:'rgba(255,215,0,0.25)',i:'workspace_premium',s:'SUPER ADMIN'},'devloper':{l:'DEV',c:'#FFD700',bg:'rgba(255,215,0,0.12)',b:'rgba(255,215,0,0.25)',i:'code',s:'DEV MODE'},'resseler':{l:'RESELLER',c:'#A855F7',bg:'rgba(168,85,247,0.12)',b:'rgba(168,85,247,0.25)',i:'storefront',s:'RESELLER'},'vip':{l:'VIP',c:'#22D3EE',bg:'rgba(34,211,238,0.12)',b:'rgba(34,211,238,0.25)',i:'diamond',s:'VIP'},'member':{l:'MEMBER',c:'#9CA3AF',bg:'rgba(255,255,255,0.06)',b:'rgba(255,255,255,0.12)',i:'person',s:'FREE'}};let c=cfg[d.r]||cfg['member'];document.getElementById('welcomeName').innerText=d.u;document.getElementById('welcomeRole').innerHTML=<span class="material-icons-round" style="font-size:12px;color:${c.c}">${c.i}</span> ${c.l};document.getElementById('welcomeRole').style.background=c.bg;document.getElementById('welcomeRole').style.color=c.c;document.getElementById('welcomeRole').style.border='1px solid '+c.b;document.getElementById('statUser').innerText=d.u;document.getElementById('statRole').innerText=c.l;document.getElementById('statExp').innerText=d.ex;document.getElementById('roleIcon').innerHTML=<span class="material-icons-round" style="color:${c.c}">${c.i}</span>;document.getElementById('roleStatus').innerText=c.s;}
+renderRole();
+window.doLogout = async () => { try{ const u=localStorage.getItem('username'); if(u) await deleteDoc(doc(db,"online_users",u)); }catch(e){} localStorage.clear(); sessionStorage.clear(); window.location.replace('index.html'); };
+
+// NEWS FIX - BISA GESER + AUTO
+let idx=0; const track=document.getElementById('newsTrack'); const dots=document.querySelectorAll('.dot'); const slider=document.getElementById('newsSlider');
+function goTo(i){ idx=(i+3)%3; track.style.transition='transform .6s cubic-bezier(0.16,1,0.3,1)'; track.style.transform=translateX(-${idx*100}%); dots.forEach((d,j)=>d.classList.toggle('active', j===idx)); }
+let auto=setInterval(()=>goTo(idx+1),3000);
+let startX=0, currentX=0, isDrag=false;
+slider.addEventListener('pointerdown', e=>{ isDrag=true; startX=e.clientX; clearInterval(auto); track.style.transition='none'; slider.setPointerCapture(e.pointerId); });
+slider.addEventListener('pointermove', e=>{ if(!isDrag) return; currentX=e.clientX-startX; track.style.transform=translateX(calc(-${idx*100}% + ${currentX}px))`; });
+slider.addEventListener('pointerup', e=>{ if(!isDrag) return; isDrag=false; slider.releasePointerCapture(e.pointerId); if(currentX < -60) goTo(idx+1); else if(currentX > 60) goTo(idx-1); else goTo(idx); currentX=0; auto=setInterval(()=>goTo(idx+1),3000); });
+
+// ASISTEN FIX - BISA KLIK + DRAG
+const assistant=document.getElementById('assistant'); const ball=document.getElementById('ball');
+let isDragging=false, sX=0, sY=0, iX=0, iY=0, moved=false;
+let saved=JSON.parse(localStorage.getItem('ballPos')||'null'); if(saved){assistant.style.left=saved.x+'px'; assistant.style.top=saved.y+'px'; assistant.style.right='auto'; assistant.style.bottom='auto';}
+ball.addEventListener('pointerdown', e=>{ isDragging=true; moved=false; sX=e.clientX; sY=e.clientY; let rect=assistant.getBoundingClientRect(); iX=rect.left; iY=rect.top; ball.setPointerCapture(e.pointerId); ball.style.transition='none'; });
+ball.addEventListener('pointermove', e=>{ if(!isDragging) return; let dx=e.clientX-sX, dy=e.clientY-sY; if(Math.abs(dx)>5||Math.abs(dy)>5) moved=true; assistant.style.left=(iX+dx)+'px'; assistant.style.top=(iY+dy)+'px'; assistant.style.right='auto'; assistant.style.bottom='auto'; });
+
+ball.addEventListener('pointerup', e=>{ isDragging=false; ball.style.transition=''; ball.releasePointerCapture(e.pointerId); if(!moved){ assistant.classList.toggle('open'); } else { let rect=assistant.getBoundingClientRect(); localStorage.setItem('ballPos', JSON.stringify({x:rect.left, y:rect.top})); } });
+document.addEventListener('click', e=>{ if(!assistant.contains(e.target) && !e.target.closest('#assistant')) assistant.classList.remove('open'); });
+
+const myUser=getData().u; const myRef=doc(db,"online_users",myUser);
+async function setOnline(){try{await setDoc(myRef,{user:myUser,role:getData().r,lastSeen:serverTimestamp(),online:true},{merge:true})}catch(e){}}
+setOnline(); setInterval(setOnline,30000);
+onSnapshot(query(collection(db,"online_users")), (snap)=>{ let list=[]; let now=Date.now(); snap.forEach(d=>{let data=d.data(); let last=data.lastSeen?.toMillis?data.lastSeen.toMillis():now; if(now-last<120000) list.push(data);}); document.getElementById('onlineCount').innerText=list.length+' online'; document.getElementById('chatOnlineCount').innerText=list.length+' online sekarang'; });
+const chatList=document.getElementById('chatList');
+onSnapshot(query(collection(db,"global_chat"),orderBy("time","asc")), (snap)=>{ chatList.innerHTML=''; let last=null; snap.forEach(docSnap=>{let m=docSnap.data(); last=m; let isMe=m.user===myUser; let timeStr=m.time?.toDate?m.time.toDate().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):'now'; chatList.innerHTML+=<div style="display:flex;gap:10px;${isMe?'flex-direction:row-reverse':''}"><div style="max-width:75%;${isMe?'background:#fff;color:#000;border:none':'background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08)'};border-radius:16px;padding:10px 14px"><div style="font-size:9px;font-weight:800;font-family:'Orbitron';margin-bottom:4px">${m.user.toUpperCase()} • ${m.role.toUpperCase()}</div><div style="font-size:12px">${m.text}</div><div style="font-size:8px;color:#666;margin-top:4px;font-family:'Orbitron'">${timeStr}</div></div></div>; }); if(last){document.getElementById('lastMsgPreview').innerText=last.text; document.getElementById('lastMsgPreview').style.color='#fff'; document.getElementById('lastMsgUser').innerText=last.user.toUpperCase()+' • '+(last.time?.toDate?last.time.toDate().toLocaleTimeString('id-ID'):'now');} chatList.scrollTop=chatList.scrollHeight; });
+window.sendChat=async()=>{let txt=document.getElementById('chatMsg').value.trim(); if(!txt)return; await addDoc(collection(db,"global_chat"),{user:getData().u,role:getData().r,text:txt,time:serverTimestamp()}); document.getElementById('chatMsg').value=''; setOnline();}
+</script>
+</body>
+</html>
